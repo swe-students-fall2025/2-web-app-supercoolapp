@@ -9,7 +9,12 @@ def create_app():
     app = Flask(__name__)
     load_dotenv()
 
-    # client =
+    load_dotenv()
+
+    mongo_uri = os.getenv("MONGO_URI")
+
+    client = pymongo.MongoClient(mongo_uri)
+    db = client["SWEProj2"]
 
     @app.route("/")
     def hello_world():
