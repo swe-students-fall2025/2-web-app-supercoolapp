@@ -28,6 +28,10 @@ def create_app():
     def trail():
         return render_template('trail.html')
     
+    @app.route("/add-trail")
+    def add_trail():
+        return render_template('add_trail.html')
+    
     @app.route("/all-trails")
     def all_trails():
         return render_template('all-trails.html')
@@ -41,4 +45,4 @@ if __name__ == '__main__':
     
     print(f"FLASK_ENV: {FLASK_ENV}, FLASK_PORT: {FLASK_PORT}")
 
-    app.run(port=FLASK_PORT)
+    app.run(debug=True, port=FLASK_PORT)
