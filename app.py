@@ -19,6 +19,15 @@ def create_app():
     def about():
         return render_template('base.html')
 
+    @app.route("/trail")
+    def trail():
+        return render_template('trail.html')
+    
+    @app.route("/all-trails")
+    def all_trails():
+        return render_template('all-trails.html')
+
+    return app
 app = create_app()
 
 if __name__ == '__main__':
