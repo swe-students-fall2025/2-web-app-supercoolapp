@@ -20,6 +20,10 @@ def create_app():
     def hello_world():
         return render_template('index.html')
         
+    @app.route("/reviews")
+    def reviews():
+        return render_template('reviews.html')
+    
     @app.route("/about")
     def about():
         return render_template('base.html')
@@ -27,10 +31,6 @@ def create_app():
     @app.route("/trail")
     def trail():
         return render_template('trail.html')
-    
-    @app.route("/add-trail")
-    def add_trail():
-        return render_template('add_trail.html')
     
     @app.route("/all-trails")
     def all_trails():
@@ -45,4 +45,4 @@ if __name__ == '__main__':
     
     print(f"FLASK_ENV: {FLASK_ENV}, FLASK_PORT: {FLASK_PORT}")
 
-    app.run(debug=True, port=FLASK_PORT)
+    app.run(port=FLASK_PORT)
