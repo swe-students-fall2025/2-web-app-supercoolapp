@@ -3,9 +3,174 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Add New Trail - SuperCoolApp</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/add-trail.css') }}">
 </head>
 <body>
+<div class="add-trail-page">
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="flash-message flash-{{ category }}">
+                        <span class="flash-icon">
+                            {% if category == 'success' %}✓{% elif category == 'error' %}✗{% else %}ℹ{% endif %}
+                        </span>
+                        <span class="flash-text">{{ message }}</span>
+                        <button class="flash-close" onclick="this.parentElement.remove()">×</button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
     
+    <div class="add-trail-container">
+    <div class="add-trail-header">
+        <h1 class="trail-title">Add Your Adventure</h1>
+        <p class="trail-subtitle">Share your hiking experience with the community</p>
+    </div>
+
+    <div class="form-container">
+        <form class="trail-form" method="POST" action="/add-trail">
+            <div class="form-section">
+                <h3 class="section-title">Trail Information</h3>
+                
+                <div class="form-group">
+                    <label for="trail_name" class="form-label">Trail Name</label>
+                    <input type="text" id="trail_name" name="trail_name" class="form-input" 
+                           placeholder="Enter the trail name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="difficulty" class="form-label">Difficulty Level</label>
+                    <div class="difficulty-selector">
+                        <input type="radio" id="easy" name="difficulty" value="Easy" class="difficulty-radio">
+                        <label for="easy" class="difficulty-option easy">
+                            <span class="difficulty-text">Easy</span>
+                        </label>
+                        
+                        <input type="radio" id="moderate" name="difficulty" value="Moderate" class="difficulty-radio">
+                        <label for="moderate" class="difficulty-option moderate">
+                            <span class="difficulty-text">Moderate</span>
+                        </label>
+                        
+                        <input type="radio" id="hard" name="difficulty" value="Hard" class="difficulty-radio">
+                        <label for="hard" class="difficulty-option hard">
+                            <span class="difficulty-text">Hard</span>
+                        </label>
+                        
+                        <input type="radio" id="expert" name="difficulty" value="Expert" class="difficulty-radio">
+                        <label for="expert" class="difficulty-option expert">
+                            <span class="difficulty-text">Expert</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="time_taken" class="form-label">Time Taken</label>
+                    <div class="time-input-group">
+                        <input type="number" id="time_taken" name="time_taken" class="form-input time-input" 
+                               placeholder="0" min="0" max="24" required>
+                        <select name="time_unit" class="time-unit-select">
+                            <option value="hours">Hours</option>
+                            <option value="minutes">Minutes</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3 class="section-title">Notes</h3>
+                
+                <div class="form-group">
+                    <label for="trail_notes" class="form-label">Notes about the trail</label>
+                    <textarea id="trail_notes" name="trail_notes" class="form-textarea" 
+                              placeholder="Share your experience, what you liked, challenges faced, tips for others, highlights, or any other observations..." 
+                              rows="6" required></textarea>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3 class="section-title">Additional Details</h3>
+                
+                <div class="form-row">
+                    <div class="form-group half-width">
+                        <label for="distance" class="form-label">Distance (miles)</label>
+                        <input type="number" id="distance" name="distance" class="form-input" 
+                               placeholder="0.0" step="0.1" min="0">
+                    </div>
+                    
+                    <div class="form-group half-width">
+                        <label for="elevation_gain" class="form-label">Elevation Gain (ft)</label>
+                        <input type="number" id="elevation_gain" name="elevation_gain" class="form-input" 
+                               placeholder="0" min="0">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="best_time" class="form-label">Best Time to Visit</label>
+                    <select id="best_time" name="best_time" class="form-select">
+                        <option value="">Select best time</option>
+                        <option value="Early Morning">Early Morning (6-9 AM)</option>
+                        <option value="Morning">Morning (9-12 PM)</option>
+                        <option value="Afternoon">Afternoon (12-5 PM)</option>
+                        <option value="Evening">Evening (5-8 PM)</option>
+                        <option value="Any Time">Any Time</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" onclick="resetForm()">Reset Form</button>
+                <button type="submit" class="btn btn-primary">
+                    <span class="btn-text">Submit Trail</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+// Difficulty selection
+document.querySelectorAll('.difficulty-radio').forEach(radio => {
+    radio.addEventListener('change', function() {
+        document.querySelectorAll('.difficulty-option').forEach(option => {
+            option.classList.remove('selected');
+        });
+        this.nextElementSibling.classList.add('selected');
+    });
+});
+
+// Form reset functionality
+function resetForm() {
+    document.querySelector('.trail-form').reset();
+    document.querySelectorAll('.difficulty-option').forEach(option => {
+        option.classList.remove('selected');
+    });
+}
+
+// Form validation and enhancement
+document.querySelector('.trail-form').addEventListener('submit', function(e) {
+    const requiredFields = ['trail_name', 'difficulty', 'time_taken', 'trail_notes'];
+    let isValid = true;
+    
+    requiredFields.forEach(fieldName => {
+        const field = document.querySelector(`[name="${fieldName}"]`);
+        if (!field.value || (field.type === 'radio' && !document.querySelector(`[name="${fieldName}"]:checked`))) {
+            field.classList.add('error');
+            isValid = false;
+        } else {
+            field.classList.remove('error');
+        }
+    });
+    
+    if (!isValid) {
+        e.preventDefault();
+        alert('Please fill in all required fields!');
+    }
+});
+</script>
+</div>
 </body>
 </html>
