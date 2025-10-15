@@ -1,11 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>List of All Trails</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>All Trails</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 24px; }
+    .trail { padding: 10px 0; border-bottom: 1px solid #eee; }
+    .trail h2 { margin: 0 0 4px; font-size: 1.1rem; }
+    .meta { color: #555; margin: 0; }
+  </style>
 </head>
 <body>
-    
+  <h1>All Trails</h1>
+  <p style="color:#666">If you haven’t wired the DB yet, this page shows sample data.</p>
+
+  {% set _trails = trails if trails is defined and trails else [
+    {'_id': '1', 'name': 'Bear Peak', 'difficulty': 'Hard', 'location': 'CO', 'avg_rating': 4.6},
+    {'_id': '2', 'name': 'Breakneck Ridge', 'difficulty': 'Hard', 'location': 'NY', 'avg_rating': 4.4}
+  ] %}
+
+  <section aria-label="All trails">
+    {% for trail in _trails %}
+      <article class="trail">
+        <h2><a href="/trails/{{ trail._id }}">{{ trail.name }}</a></h2>
+        <p class="meta">
+          <strong>Difficulty:</strong> {{ trail.difficulty }}
+          &nbsp;|&nbsp;
+          <strong>Location:</strong> {{ trail.location }}
+          &nbsp;|&nbsp;
+          <strong>Average Rating:</strong> {{ trail.avg_rating }} / 5
+        </p>
+      </article>
+    {% endfor %}
+  </section>
 </body>
 </html>
+
