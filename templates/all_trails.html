@@ -16,8 +16,8 @@
   <p style="color:#666">If you haven’t wired the DB yet, this page shows sample data.</p>
 
   {% set _trails = trails if trails is defined and trails else [
-    {'_id': '1', 'name': 'Bear Peak', 'difficulty': 'Hard', 'location': 'CO', 'avg_rating': 4.6},
-    {'_id': '2', 'name': 'Breakneck Ridge', 'difficulty': 'Hard', 'location': 'NY', 'avg_rating': 4.4}
+    {'_id': '1', 'name': 'Bear Peak', 'difficulty': 'Hard', 'location': 'CO', 'duration': '1 mile'},
+    {'_id': '2', 'name': 'Breakneck Ridge', 'difficulty': 'Hard', 'location': 'NY' 'duration': '2 miles'}
   ] %}
 
   <section aria-label="All trails">
@@ -29,7 +29,8 @@
           &nbsp;|&nbsp;
           <strong>Location:</strong> {{ trail.location }}
           &nbsp;|&nbsp;
-          <strong>Average Rating:</strong> {{ trail.avg_rating }} / 5
+          <strong>Duration:</strong> {{ trail.duration }} 
+          &nbsp;|&nbsp;
         </p>
       </article>
     {% endfor %}
