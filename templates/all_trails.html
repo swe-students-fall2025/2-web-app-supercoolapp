@@ -6,35 +6,112 @@
   <title>All Trails</title>
   <style>
     body { font-family: Arial, sans-serif; margin: 24px; }
+    .filters { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px; border: 1px solid #eee; border-radius: 8px; margin-bottom: 16px; }
     .trail { padding: 10px 0; border-bottom: 1px solid #eee; }
     .trail h2 { margin: 0 0 4px; font-size: 1.1rem; }
     .meta { color: #555; margin: 0; }
+    .muted { color: #666; }
+    @media (max-width: 600px){ .filters { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
   <h1>All Trails</h1>
-  <p style="color:#666">If you haven’t wired the DB yet, this page shows sample data.</p>
+  <p class="muted">See below for list of all existing trails:</p>
 
+  // SAMPLE data fallback //
   {% set _trails = trails if trails is defined and trails else [
-    {'_id': '1', 'name': 'Bear Peak', 'difficulty': 'Hard', 'location': 'CO', 'duration': '1 mile'},
-    {'_id': '2', 'name': 'Breakneck Ridge', 'difficulty': 'Hard', 'location': 'NY', 'duration': '2 miles'}
+    {'_id': '1', 'name': 'Bear Peak', 'difficulty': 'Hard', 'location': 'CO', 'duration': '1 mile', 'notes': 'Steep, great views'},
+    {'_id': '2', 'name': 'Breakneck Ridge', 'difficulty': 'Hard', 'location': 'NY', 'duration': '2 miles', 'notes': 'Scrambles, Hudson views'},
+    {'_id': '3', 'name': 'Storm King', 'difficulty': 'Moderate', 'location': 'NY', 'duration': '3 miles', 'notes': 'Art center nearby'},
+    {'_id': '4', 'name': 'Mount Tam', 'difficulty': 'Easy', 'location': 'CA', 'duration': '4 miles', 'notes': 'Redwoods'}
   ] %}
 
-  <section aria-label="All trails">
+  <!-- Filters -->
+  <form class="filters" id="filters" onsubmit="return false;">
+    <fieldset>
+      <legend><strong>Difficulty</strong></legend>
+      <label><input type="checkbox" name="difficulty" value="Easy"> Easy</label><br>
+      <label><input type="checkbox" name="difficulty" value="Moderate"> Moderate</label><br>
+      <label><input type="checkbox" name="difficulty" value="Hard"> Hard</label>
+    </fieldset>
+
+    <fieldset>
+      <legend><strong>Location</strong></legend>
+      <!-- Replace with real locations later -->
+      <label><input type="checkbox" name="location" value="NY"> New York</label><br>
+      <label><input type="checkbox" name="location" value="CO"> Colorado</label><br>
+      <label><input type="checkbox" name="location" value="CA"> California</label>
+    </fieldset>
+
+    <div>
+      <label for="q"><strong>Search by name</strong></label><br>
+      <input id="q" name="q" type="search" placeholder="e.g., Breakneck">
+    </div>
+
+    <div>
+      <button type="button" id="clearBtn">Clear filters</button>
+    </div>
+  </form>
+
+  <!-- Trails list -->
+  <section aria-label="All trails" id="trailList">
     {% for trail in _trails %}
-      <article class="trail">
+      <article class="trail"
+               data-name="{{ trail.name|lower }}"
+               data-difficulty="{{ trail.difficulty }}"
+               data-location="{{ trail.location }}">
         <h2><a href="/trails/{{ trail._id }}">{{ trail.name }}</a></h2>
         <p class="meta">
-          <strong>Difficulty:</strong> {{ trail.difficulty }}
-          &nbsp;|&nbsp;
-          <strong>Location:</strong> {{ trail.location }}
-          &nbsp;|&nbsp;
-          <strong>Duration:</strong> {{ trail.duration }} 
-          &nbsp;|&nbsp;
+          <strong>Difficulty:</strong> {{ trail.difficulty }} &nbsp;|&nbsp;
+          <strong>Location:</strong> {{ trail.location }} &nbsp;|&nbsp;
+          <strong>Duration:</strong> {{ trail.duration or '—' }}
         </p>
+        {% if trail.notes %}<p><strong>Notes:</strong> {{ trail.notes }}</p>{% endif %}
       </article>
     {% endfor %}
   </section>
+
+  <script>
+    (function(){
+      const list = document.getElementById('trailList');
+      const items = Array.from(list.querySelectorAll('.trail'));
+      const form = document.getElementById('filters');
+      const clearBtn = document.getElementById('clearBtn');
+      const qInput = document.getElementById('q');
+
+      function getSelected(name){
+        return Array.from(form.querySelectorAll(`input[name="${name}"]:checked`))
+                    .map(el => el.value);
+      }
+
+      function applyFilters(){
+        const diffs = getSelected('difficulty');    
+        const locs  = getSelected('location');       
+        const q     = (qInput.value || '').trim().toLowerCase();
+
+        items.forEach(el => {
+          const d = el.getAttribute('data-difficulty');
+          const l = el.getAttribute('data-location');
+          const n = el.getAttribute('data-name');
+
+          const matchDiff = diffs.length ? diffs.includes(d) : true;
+          const matchLoc  = locs.length ? locs.includes(l)  : true;
+          const matchQ    = q ? n.includes(q) : true;
+
+          el.style.display = (matchDiff && matchLoc && matchQ) ? '' : 'none';
+        });
+      }
+
+      form.addEventListener('change', applyFilters);
+      qInput.addEventListener('input', applyFilters);
+      clearBtn.addEventListener('click', () => {
+        form.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+        qInput.value = '';
+        applyFilters();
+      });
+
+      applyFilters(); 
+    })();
+  </script>
 </body>
 </html>
-
