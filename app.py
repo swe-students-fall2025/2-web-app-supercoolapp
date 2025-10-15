@@ -19,10 +19,6 @@ def create_app():
     @app.route("/")
     def hello_world():
         return render_template('index.html')
-        
-    @app.route("/reviews")
-    def reviews():
-        return render_template('reviews.html')
     
     @app.route("/about")
     def about():
@@ -34,7 +30,11 @@ def create_app():
     
     @app.route("/all-trails")
     def all_trails():
-        return render_template('all-trails.html')
+        return render_template('all_trails.html')
+
+    @app.route("/add-trail")
+    def add_trail():
+        return render_template('add_trail.html')   
 
     return app
 app = create_app()

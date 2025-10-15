@@ -3,7 +3,6 @@
 {% block title %}Footprints{% endblock %}
 
 {% block content %}
-<body>
     
     <div class="container mt-4">
     
@@ -13,8 +12,45 @@
           Welcome to Footprints! Here you will be able to track your hiking activities, and be updated on your fellow hikers' journeys!
         </p>
       </header>
-    
+      
+
+    <div class="row text-center">
+      <!-- View All Trails -->
+      <div class="col-md-4 mb-4">
+        <div class="card shadow-sm border-0 h-100">
+          <div class="card-body">
+            <!-- <h5 class="card-title fw-bold">All Trails</h5> -->
+            <p class="card-text text-muted">
+              Browse your collection of hiking trails — see distances, difficulty levels, and more.
+            </p>
+            <a href="{{ url_for('all_trails') }}" class="btn btn-success">View Trails</a>
+          </div>
+        </div>
+      </div>
     </div>
 
-</body>
+    <div class="col-md-4 mb-4">
+      <div class="card shadow-sm border-0 h-100">
+        <div class="card-body">
+          <!-- <h5 class="card-title fw-bold">Add New Trail</h5> -->
+          <p class="card-text text-muted">
+            Found a new trail? Add it to your list to keep your hiking map up to date.
+          </p>
+          <a href="{{ url_for('add_trail') }}" class="btn btn-primary">Add Trail</a>
+        </div>
+      </div>
+    </div>
+  
+    <div class="col-md-4 mb-4">
+      <div class="card shadow-sm border-0 h-100">
+        <div class="card-body">
+          <!-- <h5 class="card-title fw-bold">Manage Trails</h5> -->
+          <p class="card-text text-muted">
+            Update trail details, mark completed hikes, or remove outdated ones.
+          </p>
+          <a href="{{ url_for('trail') }}" class="btn btn-warning text-white">Manage</a>
+        </div>
+      </div>
+    </div>
+  </div>
 {% endblock %}
