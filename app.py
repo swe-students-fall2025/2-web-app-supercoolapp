@@ -29,7 +29,7 @@ def create_app():
     
     @app.route("/all-trails")
     def all_trails():
-        return render_template('all-trails.html')
+        return render_template('all_trails.html')
     
     @app.route("/add-trail", methods=['GET', 'POST'])
     def add_trail():
