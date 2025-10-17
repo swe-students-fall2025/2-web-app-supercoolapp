@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 import pymongo
+from pymongo.errors import ConnectionFailure, DuplicateKeyError
 from dotenv import load_dotenv
 import os
 from datetime import datetime
@@ -32,12 +33,34 @@ def create_app():
    
     @app.route("/all-trails")
     def all_trails():
-        # When MongoDB is connected, uncomment this:
-        # trails = list(trails_collection.find())
-        # return render_template('all_trails.html', trails=trails)
-        
-        # For now, the template uses sample data
-        return render_template('all_trails.html')
+        try:
+            # Fetch all trails from MongoDB
+            trails_cursor = db.trails.find()
+            trails = list(trails_cursor)
+            
+            # Convert MongoDB documents to template-friendly format
+            formatted_trails = []
+            for trail in trails:
+                formatted_trail = {
+                    '_id': str(trail['_id']),
+                    'name': trail.get('trail_name', ''),
+                    'difficulty': trail.get('difficulty', ''),
+                    'location': trail.get('location', 'Unknown'),
+                    'duration': f"{trail.get('time_taken', '')} {trail.get('time_unit', '')}".strip(),
+                    'notes': trail.get('trail_notes', ''),
+                    'distance': trail.get('distance', ''),
+                    'elevation_gain': trail.get('elevation_gain', ''),
+                    'best_time': trail.get('best_time', ''),
+                    'created_at': trail.get('created_at', '')
+                }
+                formatted_trails.append(formatted_trail)
+            
+            return render_template('all_trails.html', trails=formatted_trails)
+            
+        except Exception as e:
+            print(f"Error fetching trails: {e}")
+            flash('Error loading trails. Please try again.', 'error')
+            return render_template('all_trails.html', trails=[])
    
     @app.route("/add-trail", methods=['GET', 'POST'])
     def add_trail():
@@ -52,28 +75,45 @@ def create_app():
                 distance = request.form.get('distance', '')
                 elevation_gain = request.form.get('elevation_gain', '')
                 best_time = request.form.get('best_time', '')
-               
-                # Validate required fields
+                location = request.form.get('location', 'Unknown')
+
+                # Validate required fields BEFORE database insertion
                 if not trail_name or not difficulty or not time_taken or not trail_notes:
                     flash('Please fill in all required fields!', 'error')
                     return render_template('add_trail.html')
-               
-                # When MongoDB is connected, uncomment this:
-                # trail_data = {
-                #     'name': trail_name,
-                #     'difficulty': difficulty,
-                #     'duration': f"{time_taken} {time_unit}",
-                #     'notes': trail_notes,
-                #     'distance': distance,
-                #     'elevation_gain': elevation_gain,
-                #     'best_time': best_time,
-                #     'created_at': datetime.utcnow()
-                # }
-                # trails_collection.insert_one(trail_data)
+
+                # Create trail document with timestamp
+                trail_doc = {
+                    "trail_name": trail_name,
+                    "difficulty": difficulty,
+                    "time_taken": time_taken,
+                    "time_unit": time_unit,
+                    "trail_notes": trail_notes,
+                    "distance": distance,
+                    "elevation_gain": elevation_gain,
+                    "best_time": best_time,
+                    "location": location,
+                    "created_at": datetime.utcnow()
+                }
+
+                # Insert into MongoDB
+                result = db.trails.insert_one(trail_doc)
                 
-                flash(f'Trail "{trail_name}" added successfully!', 'success')
-                return redirect(url_for('all_trails'))
+                if result.inserted_id:
+                    flash(f'Trail "{trail_name}" added successfully!', 'success')
+                    return redirect(url_for('add_trail'))
+                else:
+                    flash('Failed to save trail. Please try again.', 'error')
+                    return render_template('add_trail.html')
                    
+            except ConnectionFailure as e:
+                flash('Database connection failed. Please try again later.', 'error')
+                print(f"Database connection error: {e}")
+                return render_template('add_trail.html')
+            except DuplicateKeyError as e:
+                flash('A trail with this name already exists.', 'error')
+                print(f"Duplicate key error: {e}")
+                return render_template('add_trail.html')
             except Exception as e:
                 flash(f'An error occurred: {str(e)}', 'error')
                 print(f"Error adding trail: {e}")
