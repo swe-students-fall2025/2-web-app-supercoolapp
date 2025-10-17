@@ -13,11 +13,10 @@ def create_app():
     app.secret_key = os.getenv("SECRET_KEY", "your-secret-key-here")
     load_dotenv()
 
-
     mongo_uri = os.getenv("MONGO_URI")
     client = pymongo.MongoClient(mongo_uri)
     db = client["SWEProj2"]
-
+    trails_collection = db["trails"]
 
     @app.route("/")
     def hello_world():
@@ -27,13 +26,17 @@ def create_app():
     def about():
         return render_template('base.html')
 
-
     @app.route("/trail")
     def trail():
         return render_template('trail.html')
    
     @app.route("/all-trails")
     def all_trails():
+        # When MongoDB is connected, uncomment this:
+        # trails = list(trails_collection.find())
+        # return render_template('all_trails.html', trails=trails)
+        
+        # For now, the template uses sample data
         return render_template('all_trails.html')
    
     @app.route("/add-trail", methods=['GET', 'POST'])
@@ -55,9 +58,21 @@ def create_app():
                     flash('Please fill in all required fields!', 'error')
                     return render_template('add_trail.html')
                
-                # For now, just show success message (MongoDB will be implemented later)
+                # When MongoDB is connected, uncomment this:
+                # trail_data = {
+                #     'name': trail_name,
+                #     'difficulty': difficulty,
+                #     'duration': f"{time_taken} {time_unit}",
+                #     'notes': trail_notes,
+                #     'distance': distance,
+                #     'elevation_gain': elevation_gain,
+                #     'best_time': best_time,
+                #     'created_at': datetime.utcnow()
+                # }
+                # trails_collection.insert_one(trail_data)
+                
                 flash(f'Trail "{trail_name}" added successfully!', 'success')
-                return redirect(url_for('add_trail'))
+                return redirect(url_for('all_trails'))
                    
             except Exception as e:
                 flash(f'An error occurred: {str(e)}', 'error')
@@ -66,6 +81,110 @@ def create_app():
        
         return render_template('add_trail.html')
 
+    @app.route("/edit-trail/<trail_id>", methods=['GET', 'POST'])
+    def edit_trail(trail_id):
+        if request.method == 'POST':
+            try:
+                # Get form data
+                trail_name = request.form.get('trail_name')
+                difficulty = request.form.get('difficulty')
+                location = request.form.get('location')
+                time_taken = request.form.get('time_taken')
+                trail_notes = request.form.get('trail_notes')
+                distance = request.form.get('distance', '')
+                elevation_gain = request.form.get('elevation_gain', '')
+                best_time = request.form.get('best_time', '')
+               
+                # Validate required fields
+                if not trail_name or not difficulty or not location or not time_taken or not trail_notes:
+                    flash('Please fill in all required fields!', 'error')
+                    return redirect(url_for('edit_trail', trail_id=trail_id))
+               
+                # When MongoDB is connected, uncomment this:
+                # from bson.objectid import ObjectId
+                # updated_data = {
+                #     'name': trail_name,
+                #     'difficulty': difficulty,
+                #     'location': location,
+                #     'duration': time_taken,
+                #     'notes': trail_notes,
+                #     'distance': distance,
+                #     'elevation_gain': elevation_gain,
+                #     'best_time': best_time,
+                #     'updated_at': datetime.utcnow()
+                # }
+                # trails_collection.update_one(
+                #     {'_id': ObjectId(trail_id)},
+                #     {'$set': updated_data}
+                # )
+                
+                flash(f'Trail "{trail_name}" updated successfully!', 'success')
+                return redirect(url_for('all_trails'))
+                   
+            except Exception as e:
+                flash(f'An error occurred: {str(e)}', 'error')
+                print(f"Error updating trail: {e}")
+                return redirect(url_for('edit_trail', trail_id=trail_id))
+       
+        # GET request - show the edit form
+        # When MongoDB is connected, uncomment this:
+        # from bson.objectid import ObjectId
+        # trail = trails_collection.find_one({'_id': ObjectId(trail_id)})
+        # if not trail:
+        #     flash('Trail not found!', 'error')
+        #     return redirect(url_for('all_trails'))
+        # return render_template('edit_trail.html', trail=trail, trail_id=trail_id)
+        
+        # For now, pass trail_id for the template
+        return render_template('edit_trail.html', trail_id=trail_id, trail=None)
+
+    @app.route("/delete-trail/<trail_id>", methods=['GET', 'POST'])
+    def delete_trail(trail_id):
+        if request.method == 'POST':
+            try:
+                confirm_delete = request.form.get('confirm_delete')
+                
+                if confirm_delete == 'true':
+                    # When MongoDB is connected, uncomment this:
+                    # from bson.objectid import ObjectId
+                    # trail = trails_collection.find_one({'_id': ObjectId(trail_id)})
+                    # trail_name = trail.get('name', 'Unknown Trail') if trail else 'Unknown Trail'
+                    # 
+                    # result = trails_collection.delete_one({'_id': ObjectId(trail_id)})
+                    # 
+                    # if result.deleted_count > 0:
+                    #     flash(f'Trail "{trail_name}" has been deleted successfully.', 'success')
+                    # else:
+                    #     flash('Trail not found or already deleted.', 'error')
+                    
+                    flash('Trail deleted successfully!', 'success')
+                    return redirect(url_for('all_trails'))
+                else:
+                    flash('Delete confirmation not received.', 'error')
+                    return redirect(url_for('delete_trail', trail_id=trail_id))
+                   
+            except Exception as e:
+                flash(f'An error occurred: {str(e)}', 'error')
+                print(f"Error deleting trail: {e}")
+                return redirect(url_for('all_trails'))
+       
+        # GET request - show the delete confirmation page
+        # When MongoDB is connected, uncomment this:
+        # from bson.objectid import ObjectId
+        # trail = trails_collection.find_one({'_id': ObjectId(trail_id)})
+        # if not trail:
+        #     flash('Trail not found!', 'error')
+        #     return redirect(url_for('all_trails'))
+        # return render_template('delete_trail.html', trail=trail, trail_id=trail_id)
+        
+        # For now, pass sample data
+        sample_trail = {
+            'name': 'Sample Trail',
+            'difficulty': 'Moderate',
+            'location': 'NY',
+            'duration': '2 miles'
+        }
+        return render_template('delete_trail.html', trail=sample_trail, trail_id=trail_id)
 
     return app
 
@@ -76,6 +195,5 @@ if __name__ == '__main__':
     FLASK_ENV = os.getenv("FLASK_ENV")
    
     print(f"FLASK_ENV: {FLASK_ENV}, FLASK_PORT: {FLASK_PORT}")
-
 
     app.run(port=FLASK_PORT, debug=True)

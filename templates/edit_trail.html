@@ -1,68 +1,191 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Edit Activity</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 16px; }
-    form { display: grid; gap: 12px; }
-    label { font-weight: 600; }
-    input, select, textarea, button { width: 100%; padding: 10px; font-size: 16px; box-sizing: border-box; }
-    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    @media (max-width: 480px){ .row { grid-template-columns: 1fr; } }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Trail - SuperCoolApp</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/add-trail.css') }}">
 </head>
 <body>
-  <p><a href="/all-trails">← Back to All Trails</a></p>
-  <h1>Edit Activity</h1>
+<div class="add-trail-page">
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="flash-message flash-{{ category }}">
+                        <span class="flash-icon">
+                            {% if category == 'success' %}✓{% elif category == 'error' %}✗{% else %}ℹ{% endif %}
+                        </span>
+                        <span class="flash-text">{{ message }}</span>
+                        <button class="flash-close" onclick="this.parentElement.remove()">×</button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+    
+    <div class="add-trail-container">
+        <div class="add-trail-header">
+            <h1 class="trail-title">Edit Trail</h1>
+            <p class="trail-subtitle">Update your hiking experience</p>
+        </div>
 
-  <form method="POST" action="/activities/{{ activity._id }}/edit">
-    <div>
-      <label for="trail_name">Trail *</label>
-      <input id="trail_name" name="trail_name" type="text" required value="{{ activity.trail }}">
+        <div class="form-container">
+            <form class="trail-form" method="POST" action="/edit-trail/{{ trail_id }}">
+                <input type="hidden" name="trail_id" value="{{ trail_id }}">
+                
+                <div class="form-section">
+                    <h3 class="section-title">Trail Information</h3>
+                    
+                    <div class="form-group">
+                        <label for="trail_name" class="form-label">Trail Name</label>
+                        <input type="text" id="trail_name" name="trail_name" class="form-input" 
+                               placeholder="Enter the trail name" 
+                               value="{{ request.args.get('trail_name', trail.name if trail else '') }}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="difficulty" class="form-label">Difficulty Level</label>
+                        <div class="difficulty-selector">
+                            {% set current_difficulty = request.args.get('difficulty', trail.difficulty if trail else '') %}
+                            
+                            <input type="radio" id="easy" name="difficulty" value="Easy" 
+                                   class="difficulty-radio" {% if current_difficulty == 'Easy' %}checked{% endif %}>
+                            <label for="easy" class="difficulty-option easy {% if current_difficulty == 'Easy' %}selected{% endif %}">
+                                <span class="difficulty-text">Easy</span>
+                            </label>
+                            
+                            <input type="radio" id="moderate" name="difficulty" value="Moderate" 
+                                   class="difficulty-radio" {% if current_difficulty == 'Moderate' %}checked{% endif %}>
+                            <label for="moderate" class="difficulty-option moderate {% if current_difficulty == 'Moderate' %}selected{% endif %}">
+                                <span class="difficulty-text">Moderate</span>
+                            </label>
+                            
+                            <input type="radio" id="hard" name="difficulty" value="Hard" 
+                                   class="difficulty-radio" {% if current_difficulty == 'Hard' %}checked{% endif %}>
+                            <label for="hard" class="difficulty-option hard {% if current_difficulty == 'Hard' %}selected{% endif %}">
+                                <span class="difficulty-text">Hard</span>
+                            </label>
+                            
+                            <input type="radio" id="expert" name="difficulty" value="Expert" 
+                                   class="difficulty-radio" {% if current_difficulty == 'Expert' %}checked{% endif %}>
+                            <label for="expert" class="difficulty-option expert {% if current_difficulty == 'Expert' %}selected{% endif %}">
+                                <span class="difficulty-text">Expert</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="location" class="form-label">Location</label>
+                        <input type="text" id="location" name="location" class="form-input" 
+                               placeholder="e.g., NY, CO, CA" 
+                               value="{{ request.args.get('location', trail.location if trail else '') }}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="time_taken" class="form-label">Duration</label>
+                        <input type="text" id="time_taken" name="time_taken" class="form-input" 
+                               placeholder="e.g., 2 miles, 3 hours" 
+                               value="{{ request.args.get('time_taken', trail.duration if trail else '') }}" required>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3 class="section-title">Notes</h3>
+                    
+                    <div class="form-group">
+                        <label for="trail_notes" class="form-label">Notes about the trail</label>
+                        <textarea id="trail_notes" name="trail_notes" class="form-textarea" 
+                                  placeholder="Share your experience, what you liked, challenges faced, tips for others..." 
+                                  rows="6" required>{{ request.args.get('trail_notes', trail.notes if trail else '') }}</textarea>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3 class="section-title">Additional Details</h3>
+                    
+                    <div class="form-row">
+                        <div class="form-group half-width">
+                            <label for="distance" class="form-label">Distance (miles)</label>
+                            <input type="number" id="distance" name="distance" class="form-input" 
+                                   placeholder="0.0" step="0.1" min="0"
+                                   value="{{ request.args.get('distance', trail.distance if trail else '') }}">
+                        </div>
+                        
+                        <div class="form-group half-width">
+                            <label for="elevation_gain" class="form-label">Elevation Gain (ft)</label>
+                            <input type="number" id="elevation_gain" name="elevation_gain" class="form-input" 
+                                   placeholder="0" min="0"
+                                   value="{{ request.args.get('elevation_gain', trail.elevation_gain if trail else '') }}">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="best_time" class="form-label">Best Time to Visit</label>
+                        <select id="best_time" name="best_time" class="form-select">
+                            {% set current_best_time = request.args.get('best_time', trail.best_time if trail else '') %}
+                            <option value="">Select best time</option>
+                            <option value="Early Morning" {% if current_best_time == 'Early Morning' %}selected{% endif %}>Early Morning (6-9 AM)</option>
+                            <option value="Morning" {% if current_best_time == 'Morning' %}selected{% endif %}>Morning (9-12 PM)</option>
+                            <option value="Afternoon" {% if current_best_time == 'Afternoon' %}selected{% endif %}>Afternoon (12-5 PM)</option>
+                            <option value="Evening" {% if current_best_time == 'Evening' %}selected{% endif %}>Evening (5-8 PM)</option>
+                            <option value="Any Time" {% if current_best_time == 'Any Time' %}selected{% endif %}>Any Time</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <a href="/all-trails" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary">
+                        <span class="btn-text">Update Trail</span>
+                    </button>
+                </div>
+            </form>
+
+            <!-- Delete Section -->
+            <div class="form-section" style="margin-top: 2rem; border-top: 2px solid #fee; padding-top: 2rem;">
+                <h3 class="section-title" style="color: #dc3545;">Danger Zone</h3>
+                <p style="color: #666; margin-bottom: 1rem;">Once you delete a trail, there is no going back. Please be certain.</p>
+                <a href="/delete-trail/{{ trail_id }}" class="btn" style="background-color: #dc3545; color: white;">
+                    Delete This Trail
+                </a>
+            </div>
+        </div>
     </div>
+</div>
 
-    <div class="row">
-      <div>
-        <label for="location">Location</label>
-        <input id="location" name="location" type="text" value="{{ activity.location or '' }}">
-      </div>
-      <div>
-        <label for="time_taken">Duration</label>
-        <input id="time_taken" name="time_taken" type="text" value="{{ activity.duration or '' }}" placeholder="e.g., 2h 15m">
-      </div>
-    </div>
+<script>
+// Difficulty selection
+document.querySelectorAll('.difficulty-radio').forEach(radio => {
+    radio.addEventListener('change', function() {
+        document.querySelectorAll('.difficulty-option').forEach(option => {
+            option.classList.remove('selected');
+        });
+        this.nextElementSibling.classList.add('selected');
+    });
+});
 
-    <div class="row">
-      <div>
-        <label for="difficulty">Difficulty *</label>
-        <select id="difficulty" name="difficulty" required>
-          {% set d = activity.difficulty or '' %}
-          <option value="" disabled {{ d=='' and 'selected' or '' }}>Select</option>
-          <option value="Easy"     {{ d=='Easy' and 'selected' or '' }}>Easy</option>
-          <option value="Moderate" {{ d=='Moderate' and 'selected' or '' }}>Moderate</option>
-          <option value="Hard"     {{ d=='Hard' and 'selected' or '' }}>Hard</option>
-        </select>
-      </div>
-      <div>
-        <label for="rating">Overall Rating (1–5)</label>
-        <select id="rating" name="rating">
-          {% set r = activity.rating if activity.rating is defined else '' %}
-          <option value="" {{ r=='' and 'selected' or '' }}>—</option>
-          {% for n in [5,4,3,2,1] %}
-            <option value="{{ n }}" {{ r==n and 'selected' or '' }}>{{ n }}</option>
-          {% endfor %}
-        </select>
-      </div>
-    </div>
-
-    <div>
-      <label for="trail_notes">Comments</label>
-      <textarea id="trail_notes" name="trail_notes" rows="4">{{ activity.comments or '' }}</textarea>
-    </div>
-
-    <button type="submit">Save Changes</button>
-  </form>
+// Form validation
+document.querySelector('.trail-form').addEventListener('submit', function(e) {
+    const requiredFields = ['trail_name', 'difficulty', 'location', 'time_taken', 'trail_notes'];
+    let isValid = true;
+    
+    requiredFields.forEach(fieldName => {
+        const field = document.querySelector(`[name="${fieldName}"]`);
+        if (!field.value || (field.type === 'radio' && !document.querySelector(`[name="${fieldName}"]:checked`))) {
+            field.classList.add('error');
+            isValid = false;
+        } else {
+            field.classList.remove('error');
+        }
+    });
+    
+    if (!isValid) {
+        e.preventDefault();
+        alert('Please fill in all required fields!');
+    }
+});
+</script>
 </body>
 </html>
