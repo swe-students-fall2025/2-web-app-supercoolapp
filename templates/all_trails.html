@@ -41,15 +41,14 @@
   <h1>All Trails</h1>
   <p class="muted">See below for list of all existing trails:</p>
 
-  <!-- SAMPLE data fallback -->
-  {% set _trails = trails if trails is defined and trails else [
-    {'_id': '1', 'name': 'Bear Peak', 'difficulty': 'Hard', 'location': 'CO', 'duration': '1 mile', 'notes': 'Steep, great views'},
-    {'_id': '2', 'name': 'Breakneck Ridge', 'difficulty': 'Hard', 'location': 'NY', 'duration': '2 miles', 'notes': 'Scrambles, Hudson views'},
-    {'_id': '3', 'name': 'Storm King', 'difficulty': 'Moderate', 'location': 'NY', 'duration': '3 miles', 'notes': 'Art center nearby'},
-    {'_id': '4', 'name': 'Mount Tam', 'difficulty': 'Easy', 'location': 'CA', 'duration': '4 miles', 'notes': 'Redwoods'}
-  ] %}
+  {% if trails and trails|length > 0 %}
+    <p class="muted">Found {{ trails|length }} trail(s) in the database.</p>
+  {% else %}
+    <p class="muted">No trails found. <a href="/add-trail">Add your first trail</a> to get started!</p>
+  {% endif %}
 
   <!-- Filters -->
+  {% if trails and trails|length > 0 %}
   <form class="filters" id="filters" onsubmit="return false;">
     <fieldset>
       <legend><strong>Difficulty</strong></legend>
@@ -74,10 +73,11 @@
       <button type="button" id="clearBtn">Clear filters</button>
     </div>
   </form>
+  {% endif %}
 
   <!-- Trails list -->
   <section aria-label="All trails" id="trailList">
-    {% for trail in _trails %}
+    {% for trail in trails %}
       <article class="trail"
                data-name="{{ trail.name|lower }}"
                data-difficulty="{{ trail.difficulty }}"
