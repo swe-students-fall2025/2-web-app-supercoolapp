@@ -30,6 +30,38 @@ def create_app():
     @app.route("/trail")
     def trail():
         return render_template('trail.html')
+    
+    @app.route("/trail/<trail_id>")
+    def trail_detail(trail_id):
+        try:
+            # Fetch the specific trail from MongoDB
+            trail = db.trails.find_one({'_id': ObjectId(trail_id)})
+            
+            if trail is None:
+                flash('Trail not found.', 'error')
+                return redirect(url_for('all_trails'))
+            
+            # Format the trail data
+            formatted_trail = {
+                '_id': str(trail['_id']),
+                'name': trail.get('trail_name', ''),
+                'difficulty': trail.get('difficulty', ''),
+                'location': trail.get('location', 'Unknown'),
+                'duration': f"{trail.get('time_taken', '')} {trail.get('time_unit', '')}".strip(),
+                'notes': trail.get('trail_notes', ''),
+                'distance': trail.get('distance', ''),
+                'elevation_gain': trail.get('elevation_gain', ''),
+                'best_time': trail.get('best_time', ''),
+                'created_at': trail.get('created_at', '')
+            }
+            
+            return render_template('trail.html', trail=formatted_trail)
+            
+        except Exception as e:
+            print(f"Error fetching trail: {e}")
+            flash('Error loading trail. Please try again.', 'error')
+            return redirect(url_for('all_trails'))
+   
    
     @app.route("/all-trails")
     def all_trails():

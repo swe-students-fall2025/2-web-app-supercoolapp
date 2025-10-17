@@ -1,11 +1,152 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trail Detail</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{{ trail.name }} - Trail Details</title>
+  <style>
+    body { 
+      font-family: Arial, sans-serif; 
+      margin: 24px; 
+      line-height: 1.6; 
+      color: #333;
+    }
+
+    h1 { 
+      margin-bottom: 12px; 
+      font-size: 1.8rem;
+    }
+
+    .meta, .extra-info { 
+      color: #555; 
+      margin: 4px 0 12px 0; 
+    }
+
+    .trail-table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-bottom: 16px;
+    }
+
+    .trail-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #eee;
+      vertical-align: top;
+    }
+
+    .trail-table td.label {
+      font-weight: bold;
+      width: 180px;
+      color: #333;
+    }
+
+    .notes {
+      background-color: #f9f9f9; 
+      padding: 12px; 
+      border-radius: 6px; 
+      margin-bottom: 16px; 
+    }
+
+    .actions {
+      margin-top: 16px;
+    }
+
+    .actions a {
+      display: inline-block;
+      margin-right: 12px;
+      padding: 8px 14px;
+      border-radius: 4px;
+      text-decoration: none;
+      color: white;
+      font-weight: bold;
+      font-size: 0.95rem;
+    }
+
+    .edit-link { 
+      background-color: #667eea; 
+    }
+
+    .edit-link:hover { 
+      background-color: #5568d3; 
+    }
+
+    .delete-link { 
+      background-color: #dc3545; 
+    }
+
+    .delete-link:hover { 
+      background-color: #c82333; 
+    }
+
+    .back-link { 
+      background-color: #6c757d; 
+    }
+
+    .back-link:hover { 
+      background-color: #5a6268; 
+    }
+
+    @media (max-width: 600px) {
+      .trail-table td.label {
+        display: block;
+        width: 100%;
+        margin-bottom: 4px;
+      }
+      .trail-table td {
+        display: block;
+        width: 100%;
+        border-bottom: none;
+        margin-bottom: 12px;
+      }
+    }
+  </style>
 </head>
 <body>
-    <p>trail</p>
+  <h1>{{ trail.name }}</h1>
+
+  <table class="trail-table">
+    <tr>
+      <td class="label">Difficulty</td>
+      <td>{{ trail.difficulty or '—' }}</td>
+    </tr>
+    <tr>
+      <td class="label">Location</td>
+      <td>{{ trail.location or 'Unknown' }}</td>
+    </tr>
+    <tr>
+      <td class="label">Duration</td>
+      <td>{{ trail.duration or '—' }}</td>
+    </tr>
+    <tr>
+      <td class="label">Distance</td>
+      <td>{{ trail.distance or '—' }}</td>
+    </tr>
+    <tr>
+      <td class="label">Elevation Gain</td>
+      <td>{{ trail.elevation_gain or '—' }}</td>
+    </tr>
+    <tr>
+      <td class="label">Best Time</td>
+      <td>{{ trail.best_time or '—' }}</td>
+    </tr>
+    <tr>
+      <td class="label">Created At</td>
+      <td>{{ trail.created_at or '—' }}</td>
+    </tr>
+  </table>
+
+  {% if trail.notes %}
+    <div class="notes">
+      <strong>Notes:</strong>
+      <p>{{ trail.notes }}</p>
+    </div>
+  {% endif %}
+
+  <div class="actions">
+    <a class="edit-link" href="/edit-trail/{{ trail._id }}">Edit</a>
+    <a class="delete-link" href="/delete-trail/{{ trail._id }}">Delete</a>
+    <a class="back-link" href="/all-trails">Back to all trails</a>
+  </div>
 </body>
 </html>
+

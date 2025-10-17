@@ -82,8 +82,8 @@
                data-name="{{ trail.name|lower }}"
                data-difficulty="{{ trail.difficulty }}"
                data-location="{{ trail.location }}">
-        <h2><a href="/trails/{{ trail._id }}">{{ trail.name }}</a></h2>
-        <p class="meta">
+               <h2><a href="/trail/{{ trail._id }}">{{ trail.name }}</a></h2>
+               <p class="meta">
           <strong>Difficulty:</strong> {{ trail.difficulty }} &nbsp;|&nbsp;
           <strong>Location:</strong> {{ trail.location }} &nbsp;|&nbsp;
           <strong>Duration:</strong> {{ trail.duration or '—' }}
