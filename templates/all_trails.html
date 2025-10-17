@@ -66,6 +66,21 @@
           <strong>Location:</strong> {{ trail.location }} &nbsp;|&nbsp;
           <strong>Duration:</strong> {{ trail.duration or '—' }}
         </p>
+               <!-- Edit link that forwards values via query params -->
+        <p>
+           <a class="edit-link"
+              href="/add-trail?mode=edit
+                &id={{ trail._id }}
+                &trail_name={{ trail.name | urlencode }}
+                &difficulty={{ trail.difficulty | urlencode }}
+                &location={{ trail.location | urlencode }}
+                &time_taken={{ (trail.duration or '') | urlencode }}
+                &trail_notes={{ (trail.notes or '') | urlencode }}">
+            Edit
+          </a>
+        </p>
+      </article>
+        
         {% if trail.notes %}<p><strong>Notes:</strong> {{ trail.notes }}</p>{% endif %}
       </article>
     {% endfor %}

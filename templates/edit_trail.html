@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Edit Activity</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 16px; }
+    form { display: grid; gap: 12px; }
+    label { font-weight: 600; }
+    input, select, textarea, button { width: 100%; padding: 10px; font-size: 16px; box-sizing: border-box; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (max-width: 480px){ .row { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <p><a href="/all-trails">← Back to All Trails</a></p>
+  <h1>Edit Activity</h1>
+
+  <form method="POST" action="/activities/{{ activity._id }}/edit">
+    <div>
+      <label for="trail_name">Trail *</label>
+      <input id="trail_name" name="trail_name" type="text" required value="{{ activity.trail }}">
+    </div>
+
+    <div class="row">
+      <div>
+        <label for="location">Location</label>
+        <input id="location" name="location" type="text" value="{{ activity.location or '' }}">
+      </div>
+      <div>
+        <label for="time_taken">Duration</label>
+        <input id="time_taken" name="time_taken" type="text" value="{{ activity.duration or '' }}" placeholder="e.g., 2h 15m">
+      </div>
+    </div>
+
+    <div class="row">
+      <div>
+        <label for="difficulty">Difficulty *</label>
+        <select id="difficulty" name="difficulty" required>
+          {% set d = activity.difficulty or '' %}
+          <option value="" disabled {{ d=='' and 'selected' or '' }}>Select</option>
+          <option value="Easy"     {{ d=='Easy' and 'selected' or '' }}>Easy</option>
+          <option value="Moderate" {{ d=='Moderate' and 'selected' or '' }}>Moderate</option>
+          <option value="Hard"     {{ d=='Hard' and 'selected' or '' }}>Hard</option>
+        </select>
+      </div>
+      <div>
+        <label for="rating">Overall Rating (1–5)</label>
+        <select id="rating" name="rating">
+          {% set r = activity.rating if activity.rating is defined else '' %}
+          <option value="" {{ r=='' and 'selected' or '' }}>—</option>
+          {% for n in [5,4,3,2,1] %}
+            <option value="{{ n }}" {{ r==n and 'selected' or '' }}>{{ n }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <div>
+      <label for="trail_notes">Comments</label>
+      <textarea id="trail_notes" name="trail_notes" rows="4">{{ activity.comments or '' }}</textarea>
+    </div>
+
+    <button type="submit">Save Changes</button>
+  </form>
+</body>
+</html>
