@@ -11,6 +11,29 @@
     .trail h2 { margin: 0 0 4px; font-size: 1.1rem; }
     .meta { color: #555; margin: 0; }
     .muted { color: #666; }
+    .actions { margin-top: 8px; }
+    .actions a { 
+      display: inline-block;
+      margin-right: 12px;
+      padding: 6px 12px;
+      text-decoration: none;
+      border-radius: 4px;
+      font-size: 0.9rem;
+    }
+    .edit-link { 
+      background-color: #667eea;
+      color: white;
+    }
+    .edit-link:hover {
+      background-color: #5568d3;
+    }
+    .delete-link {
+      background-color: #dc3545;
+      color: white;
+    }
+    .delete-link:hover {
+      background-color: #c82333;
+    }
     @media (max-width: 600px){ .filters { grid-template-columns: 1fr; } }
   </style>
 </head>
@@ -18,7 +41,7 @@
   <h1>All Trails</h1>
   <p class="muted">See below for list of all existing trails:</p>
 
-  // SAMPLE data fallback //
+  <!-- SAMPLE data fallback -->
   {% set _trails = trails if trails is defined and trails else [
     {'_id': '1', 'name': 'Bear Peak', 'difficulty': 'Hard', 'location': 'CO', 'duration': '1 mile', 'notes': 'Steep, great views'},
     {'_id': '2', 'name': 'Breakneck Ridge', 'difficulty': 'Hard', 'location': 'NY', 'duration': '2 miles', 'notes': 'Scrambles, Hudson views'},
@@ -37,7 +60,6 @@
 
     <fieldset>
       <legend><strong>Location</strong></legend>
-      <!-- Replace with real locations later -->
       <label><input type="checkbox" name="location" value="NY"> New York</label><br>
       <label><input type="checkbox" name="location" value="CO"> Colorado</label><br>
       <label><input type="checkbox" name="location" value="CA"> California</label>
@@ -66,22 +88,20 @@
           <strong>Location:</strong> {{ trail.location }} &nbsp;|&nbsp;
           <strong>Duration:</strong> {{ trail.duration or '—' }}
         </p>
-               <!-- Edit link that forwards values via query params -->
-        <p>
-           <a class="edit-link"
-              href="/add-trail?mode=edit
-                &id={{ trail._id }}
-                &trail_name={{ trail.name | urlencode }}
-                &difficulty={{ trail.difficulty | urlencode }}
-                &location={{ trail.location | urlencode }}
-                &time_taken={{ (trail.duration or '') | urlencode }}
-                &trail_notes={{ (trail.notes or '') | urlencode }}">
+        {% if trail.notes %}
+          <p><strong>Notes:</strong> {{ trail.notes }}</p>
+        {% endif %}
+        
+        <!-- Updated Edit and Delete Links -->
+        <div class="actions">
+          <a class="edit-link"
+             href="/edit-trail/{{ trail._id }}?trail_name={{ trail.name | urlencode }}&difficulty={{ trail.difficulty | urlencode }}&location={{ trail.location | urlencode }}&time_taken={{ (trail.duration or '') | urlencode }}&trail_notes={{ (trail.notes or '') | urlencode }}">
             Edit
           </a>
-        </p>
-      </article>
-        
-        {% if trail.notes %}<p><strong>Notes:</strong> {{ trail.notes }}</p>{% endif %}
+          <a class="delete-link" href="/delete-trail/{{ trail._id }}">
+            Delete
+          </a>
+        </div>
       </article>
     {% endfor %}
   </section>
