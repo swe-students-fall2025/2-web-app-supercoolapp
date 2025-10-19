@@ -4,11 +4,11 @@ A little exercise to build a web application following an agile development proc
 
 ## Product vision statement
 
-See instructions. Delete this line and place the Product Vision Statement here.
+Help hikers quickly find, edit, and add trail routes on a web app so planning and sharing hikes is seamless.
 
 ## User stories
 
-See instructions. Delete this line and place a link to the user stories here.
+https://github.com/swe-students-fall2025/2-web-app-supercoolapp/issues/10#issue-3530499639
 
 ## Steps necessary to run the software
 
