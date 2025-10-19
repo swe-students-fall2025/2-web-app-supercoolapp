@@ -4,7 +4,7 @@ A little exercise to build a web application following an agile development proc
 
 ## Product vision statement
 
-Our Footprints web application provides a platform for hikers to browse trails. Users can quickly find, edit, and add trail routes, so planning and sharing hikes is seamless.
+Our Footprints web application provides a platform for hikers to browse trails, where users can quickly find, edit, and add trail routes. 
 
 ## User stories
 
