@@ -5,39 +5,203 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>All Trails</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 24px; }
-    .filters { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px; border: 1px solid #eee; border-radius: 8px; margin-bottom: 16px; }
-    .trail { padding: 10px 0; border-bottom: 1px solid #eee; }
-    .trail h2 { margin: 0 0 4px; font-size: 1.1rem; }
-    .meta { color: #555; margin: 0; }
-    .muted { color: #666; }
-    .actions { margin-top: 8px; }
-    .actions a { 
-      display: inline-block;
-      margin-right: 12px;
-      padding: 6px 12px;
-      text-decoration: none;
-      border-radius: 4px;
-      font-size: 0.9rem;
+    body {
+      font-family: "Poppins", sans-serif;
+      background-color: #f8f9fa;
+      color: #333;
+      margin: 0;
+      padding: 20px;
+      min-height: 100vh;
     }
-    .edit-link { 
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: #2e7d32;
+    }
+
+    .muted {
+      color: #666;
+      margin-bottom: 16px;
+    }
+
+    .back-link {
+      display: inline-block;
+      padding: 10px 18px;
+      background-color: #1e88e5;
+      color: white;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    .back-link:hover {
+      background-color: #1565c0;
+      transform: scale(1.05);
+    }
+    .filters {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      padding: 20px;
+      border-radius: 16px;
+      background-color: #ffffff;
+      border: 1px solid #e9ecef;
+      margin-bottom: 24px;
+      transition: all 0.3s ease;
+    }
+
+    .filters:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+    }
+
+    fieldset {
+      border: none;
+      padding: 0;
+    }
+
+    legend {
+      font-weight: 600;
+      color: #2e7d32;
+      margin-bottom: 10px;
+    }
+
+    input[type="checkbox"], input[type="search"] {
+      margin-right: 6px;
+    }
+
+    input[type="search"] {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #e1e8ed;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+    }
+    input[type="search"]:focus {
+      outline: none;
+      border-color: #2e7d32;
+      box-shadow: 0 0 0 3px rgba(46,125,50,0.1);
+      transform: translateY(-1px);
+    }
+
+    button {
+      padding: 12px 20px;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    #clearBtn {
+      background-color: #f8f9fa;
+      border: 2px solid #e9ecef;
+    }
+    #clearBtn:hover {
+      background-color: #e9ecef;
+      transform: scale(1.05);
+    }
+
+    .trail {
+      background-color: #ffffff;
+      border-radius: 16px;
+      border: 1px solid #e9ecef;
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.05);
+      transition: all 0.3s ease;
+    }
+
+    .trail:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+    }
+
+    .trail h2 {
+      margin: 0 0 8px 0;
+      font-size: 1.6rem;
+      color: #2e7d32;
+    }
+
+    .trail h2 a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .meta {
+      color: #555;
+      font-size: 0.95rem;
+      margin-bottom: 8px;
+    }
+
+    .actions {
+      margin-top: 12px;
+      display: flex;
+      gap: 12px;
+    }
+
+    .actions a {
+      padding: 10px 16px;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+      display: inline-block;
+    }
+
+    .edit-link {
       background-color: #667eea;
       color: white;
     }
     .edit-link:hover {
       background-color: #5568d3;
+      transform: scale(1.05);
     }
+
     .delete-link {
       background-color: #dc3545;
       color: white;
     }
     .delete-link:hover {
       background-color: #c82333;
+      transform: scale(1.05);
     }
-    @media (max-width: 600px){ .filters { grid-template-columns: 1fr; } }
+
+    @media (max-width: 768px) {
+      .filters {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 480px) {
+      h1 {
+        font-size: 2rem;
+      }
+      .trail h2 {
+        font-size: 1.3rem;
+      }
+      .filters {
+        padding: 15px;
+        border-radius: 12px;
+      }
+    }
+    .trail {
+      animation: fadeInUp 0.5s ease-out;
+      animation-fill-mode: both;
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
   </style>
 </head>
 <body>
+  <div class="back-container">
+    <a class="back-link" href="/">Back to all trails</a>
+  </div>
   <h1>All Trails</h1>
   <p class="muted">See below for list of all existing trails:</p>
 
@@ -54,7 +218,7 @@
       <legend><strong>Difficulty</strong></legend>
       <label><input type="checkbox" name="difficulty" value="Easy">Easy</label><br>
       <label><input type="checkbox" name="difficulty" value="Moderate">Moderate</label><br>
-      <label><input type="checkbox" name="difficulty" value="Hard">Hard</label>
+      <label><input type="checkbox" name="difficulty" value="Hard">Hard</label><br>
       <label><input type="checkbox" name="difficulty" value="Hard">Expert</label>
     </fieldset>
 
