@@ -8,7 +8,7 @@ Our Footprints web application provides a platform for hikers to browse trails, 
 
 ## User stories
 
-](https://github.com/swe-students-fall2025/2-web-app-supercoolapp/issues)
+[List of User Stories](https://github.com/swe-students-fall2025/2-web-app-supercoolapp/issues)
 
 ## Steps necessary to run the software
 
@@ -17,4 +17,4 @@ Alternatively, use the command "python app.py" to start the server.
 
 ## Task boards
 
-[task-board](https://github.com/orgs/swe-students-fall2025/projects/16) 
+[Sprint 1 Task Board](https://github.com/orgs/swe-students-fall2025/projects/16) 
