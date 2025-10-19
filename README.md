@@ -1,6 +1,10 @@
 # Web Application Exercise - Footprints Hiking Web App
 
-A little exercise to build a web application following an agile development process. See the [instructions](instructions.md) for more detail.
+## Team members
+[Connor Lee](https://github.com/Connorlee487)<br>
+[Susan Wang](https://github.com/sw5556)<br>
+[Khushboo Agarwal](https://github.com/KhushbooAgrawal190803)<br>
+[Catherine Yu](https://github.com/catherineyu2014)
 
 ## Product vision statement
 
