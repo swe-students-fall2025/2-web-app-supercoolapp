@@ -8,7 +8,7 @@ Our Footprints web application provides a platform for hikers to browse trails, 
 
 ## User stories
 
-https://github.com/swe-students-fall2025/2-web-app-supercoolapp/issues/10#issue-3530499639
+](https://github.com/swe-students-fall2025/2-web-app-supercoolapp/issues)
 
 ## Steps necessary to run the software
 
