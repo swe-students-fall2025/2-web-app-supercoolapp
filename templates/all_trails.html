@@ -40,6 +40,7 @@
       background-color: #1565c0;
       transform: scale(1.05);
     }
+
     .filters {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -95,6 +96,16 @@
       transition: all 0.3s ease;
     }
 
+    button[type="submit"] {
+      background-color: #2e7d32;
+      color: white;
+      margin-right: 10px;
+    }
+    button[type="submit"]:hover {
+      background-color: #1b5e20;
+      transform: scale(1.05);
+    }
+
     #clearBtn {
       background-color: #f8f9fa;
       border: 2px solid #e9ecef;
@@ -112,6 +123,8 @@
       margin-bottom: 20px;
       box-shadow: 0 6px 15px rgba(0,0,0,0.05);
       transition: all 0.3s ease;
+      animation: fadeInUp 0.5s ease-out;
+      animation-fill-mode: both;
     }
 
     .trail:hover {
@@ -188,10 +201,7 @@
         border-radius: 12px;
       }
     }
-    .trail {
-      animation: fadeInUp 0.5s ease-out;
-      animation-fill-mode: both;
-    }
+
     @keyframes fadeInUp {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
@@ -213,28 +223,29 @@
 
   <!-- Filters -->
   {% if trails and trails|length > 0 %}
-  <form class="filters" id="filters" onsubmit="return false;">
+  <form class="filters" id="filters" method="GET" action="/all-trails">
     <fieldset>
       <legend><strong>Difficulty</strong></legend>
-      <label><input type="checkbox" name="difficulty" value="Easy">Easy</label><br>
-      <label><input type="checkbox" name="difficulty" value="Moderate">Moderate</label><br>
-      <label><input type="checkbox" name="difficulty" value="Hard">Hard</label><br>
-      <label><input type="checkbox" name="difficulty" value="Hard">Expert</label>
+      <label><input type="checkbox" name="difficulty" value="Easy" {% if 'Easy' in selected_difficulties %}checked{% endif %}> Easy</label><br>
+      <label><input type="checkbox" name="difficulty" value="Moderate" {% if 'Moderate' in selected_difficulties %}checked{% endif %}> Moderate</label><br>
+      <label><input type="checkbox" name="difficulty" value="Hard" {% if 'Hard' in selected_difficulties %}checked{% endif %}> Hard</label><br>
+      <label><input type="checkbox" name="difficulty" value="Expert" {% if 'Expert' in selected_difficulties %}checked{% endif %}> Expert</label>
     </fieldset>
 
     <fieldset>
       <legend><strong>Location</strong></legend>
-      <label><input type="checkbox" name="location" value="NY"> New York</label><br>
-      <label><input type="checkbox" name="location" value="CO"> Colorado</label><br>
-      <label><input type="checkbox" name="location" value="CA"> California</label>
+      {% for location in available_locations %}
+        <label><input type="checkbox" name="location" value="{{ location }}" {% if location in selected_locations %}checked{% endif %}> {{ location }}</label><br>
+      {% endfor %}
     </fieldset>
 
     <div>
       <label for="q"><strong>Search by name</strong></label><br>
-      <input id="q" name="q" type="search" placeholder="e.g., Breakneck">
+      <input id="q" name="q" type="search" placeholder="e.g., Breakneck" value="{{ search_query or '' }}">
     </div>
 
     <div>
+      <button type="submit">Apply filters</button>
       <button type="button" id="clearBtn">Clear filters</button>
     </div>
   </form>
@@ -243,12 +254,9 @@
   <!-- Trails list -->
   <section aria-label="All trails" id="trailList">
     {% for trail in trails %}
-      <article class="trail"
-               data-name="{{ trail.name|lower }}"
-               data-difficulty="{{ trail.difficulty }}"
-               data-location="{{ trail.location }}">
-               <h2><a href="/trail/{{ trail._id }}">{{ trail.name }}</a></h2>
-               <p class="meta">
+      <article class="trail">
+        <h2><a href="/trail/{{ trail._id }}">{{ trail.name }}</a></h2>
+        <p class="meta">
           <strong>Difficulty:</strong> {{ trail.difficulty }} &nbsp;|&nbsp;
           <strong>Location:</strong> {{ trail.location }} &nbsp;|&nbsp;
           <strong>Duration:</strong> {{ trail.duration or '—' }}
@@ -273,44 +281,12 @@
 
   <script>
     (function(){
-      const list = document.getElementById('trailList');
-      const items = Array.from(list.querySelectorAll('.trail'));
-      const form = document.getElementById('filters');
       const clearBtn = document.getElementById('clearBtn');
-      const qInput = document.getElementById('q');
-
-      function getSelected(name){
-        return Array.from(form.querySelectorAll(`input[name="${name}"]:checked`))
-                    .map(el => el.value);
-      }
-
-      function applyFilters(){
-        const diffs = getSelected('difficulty');    
-        const locs  = getSelected('location');       
-        const q     = (qInput.value || '').trim().toLowerCase();
-
-        items.forEach(el => {
-          const d = el.getAttribute('data-difficulty');
-          const l = el.getAttribute('data-location');
-          const n = el.getAttribute('data-name');
-
-          const matchDiff = diffs.length ? diffs.includes(d) : true;
-          const matchLoc  = locs.length ? locs.includes(l)  : true;
-          const matchQ    = q ? n.includes(q) : true;
-
-          el.style.display = (matchDiff && matchLoc && matchQ) ? '' : 'none';
-        });
-      }
-
-      form.addEventListener('change', applyFilters);
-      qInput.addEventListener('input', applyFilters);
+      
       clearBtn.addEventListener('click', () => {
-        form.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
-        qInput.value = '';
-        applyFilters();
+        // Redirect to /all-trails without any query parameters to clear filters
+        window.location.href = '/all-trails';
       });
-
-      applyFilters(); 
     })();
   </script>
 </body>

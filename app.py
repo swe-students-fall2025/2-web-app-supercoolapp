@@ -66,9 +66,34 @@ def create_app():
     @app.route("/all-trails")
     def all_trails():
         try:
-            # Fetch all trails from MongoDB
-            trails_cursor = db.trails.find()
+            # Get search parameters from query string
+            search_query = request.args.get('q', '').strip()
+            difficulty_filters = request.args.getlist('difficulty')
+            location_filters = request.args.getlist('location')
+            
+            # Build MongoDB query
+            query = {}
+            
+            # Add name search (case-insensitive)
+            if search_query:
+                query['trail_name'] = {'$regex': search_query, '$options': 'i'}
+            
+            # Add difficulty filter
+            if difficulty_filters:
+                query['difficulty'] = {'$in': difficulty_filters}
+            
+            # Add location filter
+            if location_filters:
+                query['location'] = {'$in': location_filters}
+            
+            # Fetch trails from MongoDB with filters
+            trails_cursor = db.trails.find(query)
             trails = list(trails_cursor)
+            
+            # Get unique locations from all trails for the location filter
+            unique_locations = db.trails.distinct('location')
+            # Filter out None/empty values and sort alphabetically
+            unique_locations = sorted([loc for loc in unique_locations if loc and loc.strip()])
             
             # Convert MongoDB documents to template-friendly format
             formatted_trails = []
@@ -87,7 +112,13 @@ def create_app():
                 }
                 formatted_trails.append(formatted_trail)
             
-            return render_template('all_trails.html', trails=formatted_trails)
+            # Pass search parameters to template for form state
+            return render_template('all_trails.html', 
+                                 trails=formatted_trails,
+                                 search_query=search_query,
+                                 selected_difficulties=difficulty_filters,
+                                 selected_locations=location_filters,
+                                 available_locations=unique_locations)
             
         except Exception as e:
             print(f"Error fetching trails: {e}")
@@ -107,10 +138,10 @@ def create_app():
                 distance = request.form.get('distance', '')
                 elevation_gain = request.form.get('elevation_gain', '')
                 best_time = request.form.get('best_time', '')
-                location = request.form.get('location', 'Unknown')
+                location = request.form.get('location', '').strip()
 
                 # Validate required fields BEFORE database insertion
-                if not trail_name or not difficulty or not time_taken or not trail_notes:
+                if not trail_name or not location or not difficulty or not time_taken or not trail_notes:
                     flash('Please fill in all required fields!', 'error')
                     return render_template('add_trail.html')
 
