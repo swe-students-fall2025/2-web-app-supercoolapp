@@ -17,7 +17,8 @@ Our Footprints web application provides a platform for hikers to browse trails, 
 ## Steps necessary to run the software
 
 Use the command "python run.py" to download all necessary Python libraries and start the server. Once the server is running, press on the link to access our web app.
-Alternatively, use the command "python app.py" to start the server. 
+
+This will install requirements from "requirements.txt" and then run "app.py" 
 
 ## Task boards
 

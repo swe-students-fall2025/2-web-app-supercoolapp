@@ -43,6 +43,12 @@
                 </div>
 
                 <div class="form-group">
+                    <label for="location" class="form-label">Location</label>
+                    <input type="text" id="location" name="location" class="form-input" 
+                           placeholder="e.g., California, Colorado, New York" required>
+                </div>
+
+                <div class="form-group">
                     <label for="difficulty" class="form-label">Difficulty Level</label>
                     <div class="difficulty-selector">
                         <input type="radio" id="easy" name="difficulty" value="Easy" class="difficulty-radio">
@@ -153,7 +159,7 @@ function resetForm() {
 
 // Form validation and enhancement
 document.querySelector('.trail-form').addEventListener('submit', function(e) {
-    const requiredFields = ['trail_name', 'difficulty', 'time_taken', 'trail_notes'];
+    const requiredFields = ['trail_name', 'location', 'difficulty', 'time_taken', 'trail_notes'];
     let isValid = true;
     
     requiredFields.forEach(fieldName => {
